@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🔍 Enhanced Fake News Detection System
 
 A comprehensive web application that detects fake news using advanced NLP techniques and connects analyzed content to previously related information for deeper insights.
@@ -187,3 +188,7 @@ For questions, issues, or contributions:
 
 **Built with ❤️ for a more informed and media-literate world**
 
+=======
+# Ai-fake-news-detector-
+AI-powered Fake News Detection system using NLP and Machine Learning to classify news as real or fake. Features include text/URL input, voice support, real-time detection, and advanced analytics. Designed to help users, journalists, and researchers verify news credibility and combat misinformation.
+>>>>>>> 084ed14f9e7136458fbe675a7b6b86d44498638c
