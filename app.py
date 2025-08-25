@@ -1,121 +1,147 @@
 import streamlit as st
 import joblib
 import os
+import base64
+import re
+from pathlib import Path
+from typing import Dict
 
-st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
+st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="wide")
 
-# Inject custom HTML/CSS styling
-st.markdown(
-    """
-    <style>
-        /* Global styles */
-        html, body { background: #0f172a; }
-        .stApp { background: radial-gradient(1200px 600px at 10% 0%, #1e293b 0%, #0f172a 40%, #0b1220 100%); }
 
-        /* Typography */
-        h1, h2, h3, h4, h5, h6 { color: #e2e8f0 !important; }
-        p, span, label { color: #cbd5e1 !important; }
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except Exception:
+        return ""
 
-        /* Card container */
-        .app-card {
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
-            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.7), inset 0 1px 0 rgba(148,163,184,0.1);
-            border-radius: 16px;
-            padding: 24px 22px;
-            margin: 16px 0 24px 0;
-        }
 
-        /* Text area */
-        .stTextArea textarea {
-            background: rgba(2, 6, 23, 0.6);
-            border: 1px solid rgba(148, 163, 184, 0.25);
-            color: #e2e8f0;
-            border-radius: 12px;
-        }
-        .stTextArea textarea:focus {
-            outline: none !important;
-            border-color: #60a5fa !important;
-            box-shadow: 0 0 0 1px #60a5fa !important;
-        }
+def _image_to_data_uri(image_path: Path) -> str:
+    try:
+        mime = {
+            ".svg": "image/svg+xml",
+            ".png": "image/png",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".gif": "image/gif",
+            ".webp": "image/webp",
+        }.get(image_path.suffix.lower(), "application/octet-stream")
+        data = image_path.read_bytes()
+        b64 = base64.b64encode(data).decode("ascii")
+        return f"data:{mime};base64,{b64}"
+    except Exception:
+        return ""
 
-        /* Button */
-        .stButton > button {
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            color: #fff;
-            border: 0;
-            padding: 0.6rem 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            letter-spacing: .2px;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
-        }
-        .stButton > button:hover {
-            filter: brightness(1.05);
-        }
 
-        /* Result badges */
-        .badge {
-            display: inline-block;
-            padding: 10px 14px;
-            border-radius: 999px;
-            font-weight: 700;
-            letter-spacing: .3px;
-        }
-        .badge-real {
-            background: rgba(22, 163, 74, 0.15);
-            border: 1px solid rgba(22, 163, 74, 0.35);
-            color: #22c55e;
-        }
-        .badge-fake {
-            background: rgba(220, 38, 38, 0.15);
-            border: 1px solid rgba(220, 38, 38, 0.35);
-            color: #f87171;
-        }
-        .subtitle {
-            color: #93c5fd !important;
-            font-weight: 500;
-            margin-top: -8px;
-        }
-    </style>
-    <div class="app-card">
-        <h1>📰 Fake News Detector</h1>
-        <p class="subtitle">Paste a headline or article and get an instant prediction.</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
+def _embed_assets(html_text: str, frontend_dir: Path) -> str:
+    # Inline CSS files referenced via <link rel="stylesheet" href="...">
+    def replace_css(match: re.Match) -> str:
+        href = match.group(1)
+        css_path = (frontend_dir / href).resolve()
+        css_text = _read_text(css_path)
+        return f"<style>\n{css_text}\n</style>"
+
+    html_text = re.sub(r"<link[^>]+href=\"([^\"]+)\"[^>]*>", replace_css, html_text)
+
+    # Inline JS files referenced via <script src="...">
+    def replace_js(match: re.Match) -> str:
+        src = match.group(1)
+        js_path = (frontend_dir / src).resolve()
+        js_text = _read_text(js_path)
+        return f"<script>\n{js_text}\n</script>"
+
+    html_text = re.sub(r"<script[^>]+src=\"([^\"]+)\"[^>]*></script>", replace_js, html_text)
+
+    # Replace <img src="..."> with data URIs so assets load inside Streamlit
+    def replace_img(match: re.Match) -> str:
+        prefix = match.group(1)
+        src = match.group(2)
+        suffix = match.group(3)
+        img_path = (frontend_dir / src).resolve()
+        data_uri = _image_to_data_uri(img_path)
+        if data_uri:
+            return f"{prefix}{data_uri}{suffix}"
+        return match.group(0)
+
+    html_text = re.sub(r"(<img[^>]+src=\")(.*?)(\"[^>]*>)", replace_img, html_text)
+
+    # Also handle CSS url(...) references within inline styles
+    def replace_css_urls(css_text: str) -> str:
+        def repl(m: re.Match) -> str:
+            url = m.group(1).strip('\"\'')
+            asset_path = (frontend_dir / url).resolve()
+            data_uri = _image_to_data_uri(asset_path)
+            return f"url('{data_uri if data_uri else url}')"
+
+        return re.sub(r"url\(([^)]+)\)", repl, css_text)
+
+    # Apply to any <style> blocks
+    def style_repl(m: re.Match) -> str:
+        before = m.group(1)
+        css = m.group(2)
+        after = m.group(3)
+        return f"{before}{replace_css_urls(css)}{after}"
+
+    html_text = re.sub(r"(<style[^>]*>)([\s\S]*?)(</style>)", style_repl, html_text)
+
+    return html_text
+
+
+def render_frontend(page_name: str = "index.html") -> None:
+    frontend_dir = Path("frontend").resolve()
+    page_path = (frontend_dir / page_name)
+    if not page_path.exists():
+        st.error(f"Frontend page not found: {page_name}")
+        return
+
+    raw_html = _read_text(page_path)
+    html = _embed_assets(raw_html, frontend_dir)
+    st.components.v1.html(html, height=900, scrolling=True)
+
+
+st.title("📰 Fake News Detector")
+st.markdown("### Choose interface mode")
+
+mode = st.sidebar.radio(
+    "Interface",
+    ("Streamlit Minimal UI", "Full HTML/CSS (frontend)"),
+    index=1,
 )
-
-st.markdown("<div class='app-card'><h3>Check if a news article is <strong>Fake</strong> or <strong>Real</strong></h3></div>", unsafe_allow_html=True)
 
 # Paths for model and vectorizer
 MODEL_PATH = "model.pkl"
 VECTORIZER_PATH = "vectorizer.pkl"
 
-# Load model and vectorizer with error handling
-try:
-    if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
-        st.error("Model files are missing! Please upload `model.pkl` and `vectorizer.pkl` to your repository.")
-    else:
-        model = joblib.load(MODEL_PATH)
-        vectorizer = joblib.load(VECTORIZER_PATH)
+if mode == "Full HTML/CSS (frontend)":
+    # Let user pick which HTML to render
+    available_pages: Dict[str, str] = {
+        "Home (index.html)": "index.html",
+        "Login (login.html)": "login.html",
+        "Features (features.html)": "features.html",
+    }
+    page_label = st.sidebar.selectbox("Page", list(available_pages.keys()), index=0)
+    render_frontend(available_pages[page_label])
+else:
+    # Minimal Streamlit-based predictor
+    try:
+        if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
+            st.error("Model files are missing! Please upload `model.pkl` and `vectorizer.pkl` to your repository.")
+        else:
+            model = joblib.load(MODEL_PATH)
+            vectorizer = joblib.load(VECTORIZER_PATH)
 
-        # User input
-        user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
+            user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
 
-        if st.button("🔍 Predict"):
-            if user_input.strip() == "":
-                st.warning("⚠ Please enter some text!")
-            else:
-                # Transform and predict
-                transformed_input = vectorizer.transform([user_input])
-                prediction = model.predict(transformed_input)[0]
-
-                # Show result with custom badges
-                if prediction == 0:
-                    st.markdown("<span class='badge badge-fake'>❌ This news is FAKE</span>", unsafe_allow_html=True)
+            if st.button("🔍 Predict"):
+                if user_input.strip() == "":
+                    st.warning("⚠ Please enter some text!")
                 else:
-                    st.markdown("<span class='badge badge-real'>✅ This news is REAL</span>", unsafe_allow_html=True)
+                    transformed_input = vectorizer.transform([user_input])
+                    prediction = model.predict(transformed_input)[0]
 
-except Exception as e:
-    st.error(f"An error occurred: {e}")
+                    if prediction == 0:
+                        st.error("❌ This news is **FAKE**")
+                    else:
+                        st.success("✅ This news is **REAL**")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
