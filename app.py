@@ -370,22 +370,22 @@ else:  # Streamlit Minimal UI
         vect_path = resolve_existing(VECTORIZER_CANDIDATES)
         if not model_path or not vect_path:
             st.error("Model files are missing! Please add `model.pkl` and `vectorizer.pkl` to project root or `backend/`.")
-    else:
+        else:
             model = joblib.load(model_path)
             vectorizer = joblib.load(vect_path)
 
-        user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
+            user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
 
-        if st.button("🔍 Predict"):
-            if user_input.strip() == "":
-                st.warning("⚠ Please enter some text!")
-            else:
-                transformed_input = vectorizer.transform([user_input])
-                prediction = model.predict(transformed_input)[0]
-
-                if prediction == 0:
-                        st.error("❌ This news is **FAKE**")
+            if st.button("🔍 Predict"):
+                if user_input.strip() == "":
+                    st.warning("⚠ Please enter some text!")
                 else:
+                    transformed_input = vectorizer.transform([user_input])
+                    prediction = model.predict(transformed_input)[0]
+
+                    if prediction == 0:
+                        st.error("❌ This news is **FAKE**")
+                    else:
                         st.success("✅ This news is **REAL**")
-except Exception as e:
-    st.error(f"An error occurred: {e}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
