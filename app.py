@@ -99,9 +99,21 @@ def render_frontend(page_name: str = "index.html") -> None:
     st.components.v1.html(html, height=900, scrolling=True)
 
 
-# Shared model/vectorizer paths
-MODEL_PATH = "model.pkl"
-VECTORIZER_PATH = "vectorizer.pkl"
+# Shared model/vectorizer paths (search root and backend/)
+MODEL_CANDIDATES = [
+    "model.pkl",
+    str(Path("backend") / "model.pkl"),
+]
+VECTORIZER_CANDIDATES = [
+    "vectorizer.pkl",
+    str(Path("backend") / "vectorizer.pkl"),
+]
+
+def resolve_existing(paths):
+    for p in paths:
+        if os.path.exists(p):
+            return p
+    return None
 
 
 # ---- Helpers brought from backend logic (adapted for Streamlit) ----
@@ -201,10 +213,12 @@ def compute_confidence(model, X) -> float:
 
 
 def load_model_and_vectorizer():
-    if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
-        st.error("Model files are missing! Please place `model.pkl` and `vectorizer.pkl` in project root.")
+    model_path = resolve_existing(MODEL_CANDIDATES)
+    vect_path = resolve_existing(VECTORIZER_CANDIDATES)
+    if not model_path or not vect_path:
+        st.error("Model files are missing! Please place `model.pkl` and `vectorizer.pkl` in project root or in `backend/`.")
         return None, None
-    return joblib.load(MODEL_PATH), joblib.load(VECTORIZER_PATH)
+    return joblib.load(model_path), joblib.load(vect_path)
 
 
 # ---- UI ----
@@ -352,24 +366,26 @@ elif mode == "Full Streamlit App":
 
 else:  # Streamlit Minimal UI
     try:
-        if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
-            st.error("Model files are missing! Please upload `model.pkl` and `vectorizer.pkl` to your repository.")
-        else:
-            model = joblib.load(MODEL_PATH)
-            vectorizer = joblib.load(VECTORIZER_PATH)
+        model_path = resolve_existing(MODEL_CANDIDATES)
+        vect_path = resolve_existing(VECTORIZER_CANDIDATES)
+        if not model_path or not vect_path:
+            st.error("Model files are missing! Please add `model.pkl` and `vectorizer.pkl` to project root or `backend/`.")
+    else:
+            model = joblib.load(model_path)
+            vectorizer = joblib.load(vect_path)
 
-            user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
+        user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
 
-            if st.button("🔍 Predict"):
-                if user_input.strip() == "":
-                    st.warning("⚠ Please enter some text!")
-                else:
-                    transformed_input = vectorizer.transform([user_input])
-                    prediction = model.predict(transformed_input)[0]
+        if st.button("🔍 Predict"):
+            if user_input.strip() == "":
+                st.warning("⚠ Please enter some text!")
+            else:
+                transformed_input = vectorizer.transform([user_input])
+                prediction = model.predict(transformed_input)[0]
 
-                    if prediction == 0:
+                if prediction == 0:
                         st.error("❌ This news is **FAKE**")
-                    else:
+                else:
                         st.success("✅ This news is **REAL**")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+except Exception as e:
+    st.error(f"An error occurred: {e}")
