@@ -351,25 +351,25 @@ elif mode == "Full Streamlit App":
         st.write("This Streamlit app integrates prediction, interpretability, and optional HTML frontend rendering.")
 
 else:  # Streamlit Minimal UI
-try:
-    if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
-        st.error("Model files are missing! Please upload `model.pkl` and `vectorizer.pkl` to your repository.")
-    else:
-        model = joblib.load(MODEL_PATH)
-        vectorizer = joblib.load(VECTORIZER_PATH)
+    try:
+        if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
+            st.error("Model files are missing! Please upload `model.pkl` and `vectorizer.pkl` to your repository.")
+        else:
+            model = joblib.load(MODEL_PATH)
+            vectorizer = joblib.load(VECTORIZER_PATH)
 
-        user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
+            user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
 
-        if st.button("🔍 Predict"):
-            if user_input.strip() == "":
-                st.warning("⚠ Please enter some text!")
-            else:
-                transformed_input = vectorizer.transform([user_input])
-                prediction = model.predict(transformed_input)[0]
-
-                if prediction == 0:
-                        st.error("❌ This news is **FAKE**")
+            if st.button("🔍 Predict"):
+                if user_input.strip() == "":
+                    st.warning("⚠ Please enter some text!")
                 else:
+                    transformed_input = vectorizer.transform([user_input])
+                    prediction = model.predict(transformed_input)[0]
+
+                    if prediction == 0:
+                        st.error("❌ This news is **FAKE**")
+                    else:
                         st.success("✅ This news is **REAL**")
-except Exception as e:
-    st.error(f"An error occurred: {e}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
