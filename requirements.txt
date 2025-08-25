@@ -1,0 +1,34 @@
+# Core ML and Data Science
+streamlit
+pandas
+numpy
+scikit-learn
+nltk
+textblob
+
+# Advanced NLP
+spacy
+
+# Web Framework
+flask
+flask-cors
+flask-sqlalchemy
+flask-login
+werkzeug
+
+# Data Processing
+beautifulsoup4
+requests
+
+# Model Persistence
+joblib
+
+# Additional ML Libraries
+scipy
+matplotlib
+seaborn
+
+# Development and Testing
+pytest
+black
+flake8

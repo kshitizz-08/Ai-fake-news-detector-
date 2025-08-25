@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake News Detection</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-text">
+                    <h2>📰 NLP Powered Fake News Detection</h2>
+                    <p>Advanced AI technology to detect and analyze fake news content with unprecedented accuracy</p>
+                </div>
+                <div class="header-image">
+                    <img src="images/hero-illustration.svg" alt="AI-powered fake news detection illustration" class="hero-img">
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="user-info hidden" id="userInfo">
+                    <span class="username" id="username"></span>
+                    <div class="user-menu">
+                        <button class="profile-btn" id="profileBtn">👤 Profile</button>
+                        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+                    </div>
+                </div>
+                <button class="login-btn hidden" id="loginBtn">🔐 Login</button>
+            </div>
+        </div>
+
+        <!-- Guest Message Section -->
+        <div class="card guest-message-card" id="guestMessageCard">
+            <div class="guest-message-content">
+                <div class="guest-icon">🔐</div>
+                <h3>Welcome to Fake News Detection</h3>
+                <p>To use our advanced AI-powered fake news detection system, please log in to your account.</p>
+                <div class="guest-actions">
+                    <button class="login-btn-primary" onclick="window.location.href='login.html'">🔐 Login</button>
+                    <button class="register-btn-primary" onclick="window.location.href='login.html#register'">📝 Register</button>
+                </div>
+                <div class="guest-features">
+                    <h4>What you'll get:</h4>
+                    <ul>
+                        <li>✅ AI-powered news analysis</li>
+                        <li>✅ Voice input support</li>
+                        <li>✅ Detailed analysis reports</li>
+                        <li>✅ News history tracking</li>
+                        <li>✅ User profile management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Info Section -->
+        <div class="user-profile-section hidden" id="userProfileSection">
+            <div class="profile-card">
+                <h3>👤 User Profile</h3>
+                <div class="profile-info">
+                    <div class="profile-item">
+                        <label>Username:</label>
+                        <span id="profileUsername"></span>
+                    </div>
+                    <div class="profile-item">
+                        <label>Email:</label>
+                        <span id="profileEmail"></span>
+                    </div>
+                    <div class="profile-item">
+                        <label>Member Since:</label>
+                        <span id="profileCreated"></span>
+                    </div>
+                    <div class="profile-item">
+                        <label>Last Login:</label>
+                        <span id="profileLastLogin"></span>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+
+        <div class="card input-card hidden">
+            <label for="newsText">Paste news text or a URL:</label>
+            <div class="input-container">
+                <textarea id="newsText" placeholder="Paste article text or URL..."></textarea>
+                <div class="voice-controls">
+                    <button id="btnVoice" class="voice-btn" title="Click to start voice input" aria-label="Start voice input for news text">
+                        <img src="images/voice-mic.svg" alt="Voice Input" class="voice-icon">
+                    </button>
+                    <div id="voiceStatus" class="voice-status hidden" role="status" aria-live="polite">Listening...</div>
+                </div>
+            </div>
+            <div class="actions">
+                <button id="btnCheck">Analyze</button>
+                <button id="btnClear" class="secondary">Clear</button>
+            </div>
+        </div>
+
+        <div class="card hidden" id="preprocessCard">
+            <h3>Preprocessing</h3>
+            <p id="preprocessMsg">Cleaning text...</p>
+        </div>
+
+        <div class="result-grid hidden" id="resultGrid">
+            <div class="card" id="fakeCard">
+                <h3>Warning</h3>
+                <p>This content appears to be <b>FAKE</b>.</p>
+                <p><span id="fakeConfidence"></span> confidence.</p>
+                <div class="actions">
+                    <button id="btnReport" class="danger">Report</button>
+                </div>
+            </div>
+            <div class="card" id="realCard">
+                <h3>Trusted Source</h3>
+                <p>This content appears to be <b>REAL</b>.</p>
+                <p><span id="realConfidence"></span> confidence.</p>
+                <div class="actions">
+                    <button id="btnShare" class="success">Share</button>
+                </div>
+            </div>
+            
+            <!-- Related News Section -->
+            <div class="card related-news-card hidden" id="relatedNewsCard">
+                <h3>🔗 Related News Articles</h3>
+                <div id="relatedNewsList" class="related-news-list">
+                    <!-- Related news items will be populated here -->
+                </div>
+                <div class="related-news-info">
+                    <p>These articles were previously analyzed and show similar content patterns.</p>
+                </div>
+            </div>
+            
+            <!-- Detailed Analysis Section -->
+            <div class="card analysis-card hidden" id="analysisCard">
+                <h3>🔍 Why This News is Classified as <span id="analysisLabel"></span></h3>
+                
+                <!-- Model Reasoning -->
+                <div class="analysis-section">
+                    <h4>🤖 Model Reasoning</h4>
+                    <p id="modelReasoning" class="reasoning-text"></p>
+                </div>
+                
+                <!-- Confidence Breakdown -->
+                <div class="analysis-section">
+                    <h4>📊 Confidence Analysis</h4>
+                    <div class="confidence-grid">
+                        <div class="confidence-item">
+                            <span class="confidence-label">Confidence Level:</span>
+                            <span id="confidenceLevel" class="confidence-value"></span>
+                        </div>
+                        <div class="confidence-item">
+                            <span class="confidence-label">Trust Indicator:</span>
+                            <span id="trustIndicator" class="confidence-value"></span>
+                        </div>
+                        <div class="confidence-item">
+                            <span class="confidence-label">Reliability Score:</span>
+                            <span id="reliabilityScore" class="confidence-value"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Text Characteristics -->
+                <div class="analysis-section">
+                    <h4>📝 Text Analysis</h4>
+                    <div class="text-analysis-grid">
+                        <div class="analysis-item">
+                            <span class="analysis-label">Word Count:</span>
+                            <span id="wordCount" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Vocabulary Diversity:</span>
+                            <span id="vocabDiversity" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Readability Score:</span>
+                            <span id="readabilityScore" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Readability Level:</span>
+                            <span id="readabilityLevel" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Formal Indicators:</span>
+                            <span id="formalIndicators" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Credibility Markers:</span>
+                            <span id="credibilityMarkers" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Emotional Indicators:</span>
+                            <span id="emotionalIndicators" class="analysis-value"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Sentence Count:</span>
+                            <span id="sentenceCount" class="analysis-value"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Top Contributing Features -->
+                <div class="analysis-section">
+                    <h4>🔑 Key Contributing Factors</h4>
+                    <div id="topFeatures" class="features-list"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- News History Section -->
+        <div class="card history-card hidden" id="historyCard">
+            <h3>📚 Your News Analysis History</h3>
+            <div id="newsHistory" class="news-history">
+                <!-- News history will be populated here -->
+            </div>
+            <div class="history-pagination">
+                <button id="btnPrevPage" class="pagination-btn" disabled>← Previous</button>
+                <span id="pageInfo" class="page-info">Page 1</span>
+                <button id="btnNextPage" class="pagination-btn">Next →</button>
+            </div>
+        </div>
+
+
+
+        <p id="debugPreview" class="muted hidden"></p>
+        
+        <!-- Features Section -->
+        <div class="features-section">
+            <h3 class="section-title">🚀 Key Features</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="images/ai-brain.svg" alt="AI Brain" class="feature-img">
+                    </div>
+                    <h4>AI-Powered Analysis</h4>
+                    <p>Advanced machine learning algorithms analyze news content with unprecedented accuracy</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="images/news-icon.svg" alt="News Analysis" class="feature-img">
+                    </div>
+                    <h4>Real-time Detection</h4>
+                    <p>Get instant results with our lightning-fast analysis engine</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="images/voice-mic.svg" alt="Voice Input" class="feature-img">
+                    </div>
+                    <h4>Voice Input</h4>
+                    <p>Simply speak your news content and let our AI analyze it instantly</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="images/analytics-chart.svg" alt="Analytics" class="feature-img">
+                    </div>
+                    <h4>Advanced Analytics</h4>
+                    <p>Deep dive into the data with comprehensive analytics and insights</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📰 Fake News Detection</h3>
+                <p class="footer-description">
+                    Advanced AI-powered platform for detecting and analyzing fake news content. 
+                    Built with cutting-edge machine learning and natural language processing by Kshitij Kalhapure.
+                </p>
+                <div class="footer-social">
+                    <a href="https://github.com/kshitizz-08" class="social-link" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+                        <img src="images/github-icon.svg" alt="GitHub" class="social-icon">
+                    </a>
+                    <a href="https://www.linkedin.com/in/kshitij-kalhapure-3a1400214/" class="social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                        <img src="images/linkedin-icon.svg" alt="LinkedIn" class="social-icon">
+                    </a>
+                    <a href="https://x.com/KTij08" class="social-link" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
+                        <img src="images/twitter-icon.svg" alt="Twitter" class="social-icon">
+                    </a>
+                    <a href="mailto:kshitijkalhapure0806@gmail.com" class="social-link" aria-label="Email">
+                        <img src="images/email-icon.svg" alt="Email" class="social-icon">
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Features</h4>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">AI Analysis</a></li>
+                    <li><a href="#" class="footer-link">Real-time Detection</a></li>
+                    <li><a href="#" class="footer-link">User Profiles</a></li>
+                    <li><a href="#" class="footer-link">News History</a></li>
+                    <li><a href="#" class="footer-link">Voice Input</a></li>
+                    <li><a href="https://github.com/kshitizz-08" class="footer-link" target="_blank" rel="noopener noreferrer">Open Source</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/kshitizz-08" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+                    <li><a href="https://www.linkedin.com/in/kshitij-kalhapure-3a1400214/" class="footer-link" target="_blank" rel="noopener noreferrer">Developer Profile</a></li>
+                    <li><a href="mailto:kshitijkalhapure0806@gmail.com" class="footer-link">Contact Developer</a></li>
+                    <li><a href="https://x.com/KTij08" class="footer-link" target="_blank" rel="noopener noreferrer">Follow Updates</a></li>
+                    <li><a href="#" class="footer-link">Support Center</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Contact</h4>
+                <ul class="footer-links">
+                    <li><a href="mailto:kshitijkalhapure0806@gmail.com" class="footer-link">kshitijkalhapure0806@gmail.com</a></li>
+                    <li><a href="tel:+918767507806" class="footer-link">+91 8767507806</a></li>
+                    <li><a href="https://github.com/kshitizz-08" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub Profile</a></li>
+                    <li><a href="https://www.linkedin.com/in/kshitij-kalhapure-3a1400214/" class="footer-link" target="_blank" rel="noopener noreferrer">LinkedIn Profile</a></li>
+                    <li><a href="https://x.com/KTij08" class="footer-link" target="_blank" rel="noopener noreferrer">Twitter Profile</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="copyright">
+                    <center>© 2025 Fake News Detection by Kshitij Kalhapure. All rights reserved.</center>
+                </p>
+                <div class="footer-bottom-links">
+                    <a href="#" class="footer-bottom-link">Privacy</a>
+                    <span class="separator">•</span>
+                    <a href="#" class="footer-bottom-link">Terms</a>
+                    <span class="separator">•</span>
+                    <a href="#" class="footer-bottom-link">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

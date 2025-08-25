@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features - Fake News Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .features-hero {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+            margin: -40px -40px 60px -40px;
+            border-radius: 24px 24px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .features-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .features-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .features-hero p {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out both;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 15px 0;
+            letter-spacing: -0.01em;
+        }
+        
+        .feature-description {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .feature-benefits {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-benefits li {
+            color: #64748b;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .feature-benefits li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 40px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .features-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .features-hero {
+                padding: 60px 20px;
+                margin: -20px -20px 40px -20px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <div class="features-hero">
+            <h1>🚀 Platform Features</h1>
+            <p>Discover the cutting-edge capabilities that make our Fake News Detection platform the most advanced solution in the industry.</p>
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🤖</span>
+                <h3 class="feature-title">AI Analysis</h3>
+                <p class="feature-description">
+                    Our advanced machine learning algorithms analyze news content with unprecedented accuracy, 
+                    detecting patterns and inconsistencies that human readers might miss.
+                </p>
+                <ul class="feature-benefits">
+                    <li>Natural Language Processing</li>
+                    <li>Pattern Recognition</li>
+                    <li>Contextual Analysis</li>
+                    <li>Real-time Learning</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3 class="feature-title">Real-time Detection</h3>
+                <p class="feature-description">
+                    Get instant results with our lightning-fast analysis engine. 
+                    Process news articles, URLs, or text input in seconds, not minutes.
+                </p>
+                <ul class="feature-benefits">
+                    <li>Instant Results</li>
+                    <li>Live Processing</li>
+                    <li>Streaming Analysis</li>
+                    <li>Performance Optimized</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">👤</span>
+                <h3 class="feature-title">User Profiles</h3>
+                <p class="feature-description">
+                    Personalized experience with user accounts that track your analysis history, 
+                    preferences, and provide insights into your news consumption patterns.
+                </p>
+                <ul class="feature-benefits">
+                    <li>Personal Dashboard</li>
+                    <li>Analysis History</li>
+                    <li>Custom Preferences</li>
+                    <li>Progress Tracking</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3 class="feature-title">News History</h3>
+                <p class="feature-description">
+                    Keep track of all your analyzed articles with our comprehensive history system. 
+                    Review past analyses, compare results, and learn from patterns.
+                </p>
+                <ul class="feature-benefits">
+                    <li>Complete Archive</li>
+                    <li>Search & Filter</li>
+                    <li>Export Data</li>
+                    <li>Trend Analysis</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🎤</span>
+                <h3 class="feature-title">Voice Input</h3>
+                <p class="feature-description">
+                    Break down barriers with our innovative voice input technology. 
+                    Simply speak your news content and let our AI analyze it instantly.
+                </p>
+                <ul class="feature-benefits">
+                    <li>Speech Recognition</li>
+                    <li>Multi-language Support</li>
+                    <li>Noise Cancellation</li>
+                    <li>Accessibility Focused</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3 class="feature-title">Advanced Analytics</h3>
+                <p class="feature-description">
+                    Deep dive into the data with comprehensive analytics and insights. 
+                    Understand why content is classified as fake or real with detailed explanations.
+                </p>
+                <ul class="feature-benefits">
+                    <li>Detailed Reports</li>
+                    <li>Confidence Scores</li>
+                    <li>Feature Analysis</li>
+                    <li>Visual Insights</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📰 Fake News Detection</h3>
+                <p class="footer-description">
+                    Advanced AI-powered platform for detecting and analyzing fake news content. 
+                    Built with cutting-edge machine learning and natural language processing.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="social-link" aria-label="GitHub">
+                        <img src="images/github-icon.svg" alt="GitHub" class="social-icon">
+                    </a>
+                    <a href="#" class="social-link" aria-label="LinkedIn">
+                        <img src="images/linkedin-icon.svg" alt="LinkedIn" class="social-icon">
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <img src="images/twitter-icon.svg" alt="Twitter" class="social-icon">
+                    </a>
+                    <a href="#" class="social-link" aria-label="Email">
+                        <img src="images/email-icon.svg" alt="Email" class="social-icon">
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Features</h4>
+                <ul class="footer-links">
+                    <li><a href="features.html" class="footer-link">AI Analysis</a></li>
+                    <li><a href="features.html" class="footer-link">Real-time Detection</a></li>
+                    <li><a href="features.html" class="footer-link">User Profiles</a></li>
+                    <li><a href="features.html" class="footer-link">News History</a></li>
+                    <li><a href="features.html" class="footer-link">Voice Input</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="api-docs.html" class="footer-link">API Documentation</a></li>
+                    <li><a href="developer-guide.html" class="footer-link">Developer Guide</a></li>
+                    <li><a href="privacy-policy.html" class="footer-link">Privacy Policy</a></li>
+                    <li><a href="terms-of-service.html" class="footer-link">Terms of Service</a></li>
+                    <li><a href="support.html" class="footer-link">Support Center</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Contact</h4>
+                <ul class="footer-links">
+                    <li><a href="mailto:contact@fakenewsdetection.com" class="footer-link">contact@fakenewsdetection.com</a></li>
+                    <li><a href="tel:+1-555-0123" class="footer-link">+1 (555) 012-3456</a></li>
+                    <li><a href="report-bug.html" class="footer-link">Report Bug</a></li>
+                    <li><a href="feature-request.html" class="footer-link">Feature Request</a></li>
+                    <li><a href="feedback.html" class="footer-link">Feedback</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="copyright">
+                    <center>© 2025 Fake News Detection. All rights reserved.</center>
+                </p>
+                <div class="footer-bottom-links">
+                    <a href="privacy-policy.html" class="footer-bottom-link">Privacy</a>
+                    <span class="separator">•</span>
+                    <a href="terms-of-service.html" class="footer-bottom-link">Terms</a>
+                    <span class="separator">•</span>
+                    <a href="cookies.html" class="footer-bottom-link">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

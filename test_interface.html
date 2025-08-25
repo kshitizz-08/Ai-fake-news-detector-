@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Test Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sample-text {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .fake-sample {
+            border-left-color: #dc3545;
+        }
+        .real-sample {
+            border-left-color: #28a745;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .result.fake {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result.real {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Fake News Detection Model Test Interface</h1>
+    
+    <div class="test-section">
+        <h2>📝 Test with Custom Text</h2>
+        <textarea id="customText" placeholder="Enter your news text here..."></textarea>
+        <button onclick="testCustomText()">Test Prediction</button>
+        <div id="customResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📰 Test with Sample Real News</h2>
+        <div class="sample-text real-sample">
+            <strong>Real News Sample:</strong><br>
+            "NASA successfully launched the James Webb Space Telescope on December 25, 2021. The telescope, which cost approximately $10 billion, is designed to study the universe in infrared light and will help scientists understand the formation of galaxies, stars, and planetary systems."
+        </div>
+        <button onclick="testRealNews()">Test Real News</button>
+        <div id="realResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🚨 Test with Sample Fake News</h2>
+        <div class="sample-text fake-sample">
+            <strong>Fake News Sample:</strong><br>
+            "BREAKING: Scientists discover that drinking hot water with lemon cures all diseases instantly! This miracle cure has been hidden by big pharma for years. Share this immediately before they take it down! Click here to learn more!"
+        </div>
+        <button onclick="testFakeNews()">Test Fake News</button>
+        <div id="fakeResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 More Test Samples</h2>
+        
+        <h3>Real News Examples:</h3>
+        <div class="sample-text real-sample">
+            <strong>Real News 1:</strong><br>
+            "The World Health Organization announced new guidelines for COVID-19 prevention today. The updated recommendations include improved mask protocols and vaccination strategies based on recent scientific studies."
+        </div>
+        <button onclick="testRealNews1()">Test Real News 1</button>
+        
+        <div class="sample-text real-sample">
+            <strong>Real News 2:</strong><br>
+            "Apple Inc. reported record quarterly earnings today, with iPhone sales exceeding analyst expectations. The company's revenue grew 8% year-over-year, driven by strong demand in emerging markets."
+        </div>
+        <button onclick="testRealNews2()">Test Real News 2</button>
+        
+        <h3>Fake News Examples:</h3>
+        <div class="sample-text fake-sample">
+            <strong>Fake News 1:</strong><br>
+            "SHOCKING: Your phone is secretly recording everything you say! Tech companies are spying on you 24/7. Click here to learn the truth they don't want you to know!"
+        </div>
+        <button onclick="testFakeNews1()">Test Fake News 1</button>
+        
+        <div class="sample-text fake-sample">
+            <strong>Fake News 2:</strong><br>
+            "URGENT: Government admits aliens are real! Classified documents reveal extraterrestrial contact. Share this before they delete it forever!"
+        </div>
+        <button onclick="testFakeNews2()">Test Fake News 2</button>
+    </div>
+
+    <script>
+        async function testPrediction(text, resultId) {
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ news: text })
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById(resultId);
+                
+                resultDiv.innerHTML = `
+                    <div class="result ${data.prediction.toLowerCase()}">
+                        Prediction: ${data.prediction}<br>
+                        Confidence: ${data.confidence}%<br>
+                        Source Type: ${data.source_type}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById(resultId).innerHTML = `
+                    <div style="color: red;">
+                        Error: Make sure the backend server is running on http://localhost:5000
+                    </div>
+                `;
+            }
+        }
+
+        function testCustomText() {
+            const text = document.getElementById('customText').value;
+            if (text.trim()) {
+                testPrediction(text, 'customResult');
+            } else {
+                alert('Please enter some text to test');
+            }
+        }
+
+        function testRealNews() {
+            const text = "NASA successfully launched the James Webb Space Telescope on December 25, 2021. The telescope, which cost approximately $10 billion, is designed to study the universe in infrared light and will help scientists understand the formation of galaxies, stars, and planetary systems.";
+            testPrediction(text, 'realResult');
+        }
+
+        function testFakeNews() {
+            const text = "BREAKING: Scientists discover that drinking hot water with lemon cures all diseases instantly! This miracle cure has been hidden by big pharma for years. Share this immediately before they take it down! Click here to learn more!";
+            testPrediction(text, 'fakeResult');
+        }
+
+        function testRealNews1() {
+            const text = "The World Health Organization announced new guidelines for COVID-19 prevention today. The updated recommendations include improved mask protocols and vaccination strategies based on recent scientific studies.";
+            testPrediction(text, 'realResult1');
+        }
+
+        function testRealNews2() {
+            const text = "Apple Inc. reported record quarterly earnings today, with iPhone sales exceeding analyst expectations. The company's revenue grew 8% year-over-year, driven by strong demand in emerging markets.";
+            testPrediction(text, 'realResult2');
+        }
+
+        function testFakeNews1() {
+            const text = "SHOCKING: Your phone is secretly recording everything you say! Tech companies are spying on you 24/7. Click here to learn the truth they don't want you to know!";
+            testPrediction(text, 'fakeResult1');
+        }
+
+        function testFakeNews2() {
+            const text = "URGENT: Government admits aliens are real! Classified documents reveal extraterrestrial contact. Share this before they delete it forever!";
+            testPrediction(text, 'fakeResult2');
+        }
+    </script>
+</body>
+</html>

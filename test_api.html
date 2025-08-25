@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test for Top Features</h1>
+    <textarea id="testText" rows="5" cols="50">This is a test news article about politics and elections. The government announced new policies today.</textarea>
+    <br><br>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const text = document.getElementById('testText').value;
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ news: text })
+                });
+                
+                const data = await response.json();
+                console.log('Full API response:', data);
+                
+                resultDiv.innerHTML = `
+                    <h3>API Response:</h3>
+                    <p><strong>Prediction:</strong> ${data.prediction}</p>
+                    <p><strong>Confidence:</strong> ${data.confidence}%</p>
+                    <p><strong>Top Features:</strong></p>
+                    <pre>${JSON.stringify(data.interpretability?.top_features, null, 2)}</pre>
+                    <p><strong>Full Interpretability:</strong></p>
+                    <pre>${JSON.stringify(data.interpretability, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('API Error:', error);
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

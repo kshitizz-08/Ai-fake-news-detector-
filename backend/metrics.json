@@ -1,0 +1,7 @@
+{
+  "accuracy": 0.9975090579710145,
+  "model_type": "RandomForestClassifier",
+  "training_samples": 35326,
+  "test_samples": 8832,
+  "features": 5000
+}

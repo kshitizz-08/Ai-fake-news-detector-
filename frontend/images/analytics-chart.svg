@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.2" />
+    </linearGradient>
+    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Chart background -->
+  <rect x="20" y="20" width="60" height="60" fill="white" stroke="#e5e7eb" stroke-width="1" rx="3"/>
+  
+  <!-- Grid lines -->
+  <line x1="20" y1="40" x2="80" y2="40" stroke="#f3f4f6" stroke-width="1"/>
+  <line x1="20" y1="60" x2="80" y2="60" stroke="#f3f4f6" stroke-width="1"/>
+  <line x1="40" y1="20" x2="40" y2="80" stroke="#f3f4f6" stroke-width="1"/>
+  <line x1="60" y1="20" x2="60" y2="80" stroke="#f3f4f6" stroke-width="1"/>
+  
+  <!-- Bar chart -->
+  <rect x="25" y="50" width="8" height="20" fill="url(#chartGradient)" rx="2"/>
+  <rect x="37" y="45" width="8" height="25" fill="url(#chartGradient)" rx="2"/>
+  <rect x="49" y="35" width="8" height="35" fill="url(#chartGradient)" rx="2"/>
+  <rect x="61" y="30" width="8" height="40" fill="url(#chartGradient)" rx="2"/>
+  <rect x="73" y="25" width="8" height="45" fill="url(#chartGradient)" rx="2"/>
+  
+  <!-- Line chart -->
+  <path d="M25 65 Q32.5 60, 40 55 Q47.5 50, 55 45 Q62.5 40, 70 35 Q77.5 30, 85 25" 
+        fill="none" stroke="url(#lineGradient)" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Data points -->
+  <circle cx="25" cy="65" r="3" fill="#8b5cf6"/>
+  <circle cx="40" cy="55" r="3" fill="#8b5cf6"/>
+  <circle cx="55" cy="45" r="3" fill="#8b5cf6"/>
+  <circle cx="70" cy="35" r="3" fill="#8b5cf6"/>
+  <circle cx="85" cy="25" r="3" fill="#8b5cf6"/>
+  
+  <!-- Trend arrow -->
+  <path d="M75 15 L80 20 L75 25" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="70" y="20" fill="#10b981" font-size="8" font-weight="bold">↗</text>
+</svg>
