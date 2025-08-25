@@ -1,23 +1,40 @@
 import streamlit as st
 import joblib
+import os
 
-# Load your model
-model = joblib.load("model.pkl")  # Replace with your model file
-vectorizer = joblib.load("vectorizer.pkl")  # If you have one
+st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
 
 st.title("📰 Fake News Detector")
-st.write("Enter news text below and check if it's Fake or Real")
+st.markdown("### Check if a news article is **Fake or Real**")
 
-user_input = st.text_area("Enter News Text:")
+# Paths for model and vectorizer
+MODEL_PATH = "model.pkl"
+VECTORIZER_PATH = "vectorizer.pkl"
 
-if st.button("Predict"):
-    if user_input.strip() == "":
-        st.warning("Please enter some text!")
+# Load model and vectorizer with error handling
+try:
+    if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
+        st.error("Model files are missing! Please upload `model.pkl` and `vectorizer.pkl` to your repository.")
     else:
-        # Transform and predict
-        transformed_input = vectorizer.transform([user_input])
-        prediction = model.predict(transformed_input)[0]
-        if prediction == 0:
-            st.error("This news is **FAKE** ❌")
-        else:
-            st.success("This news is **REAL** ✅")
+        model = joblib.load(MODEL_PATH)
+        vectorizer = joblib.load(VECTORIZER_PATH)
+
+        # User input
+        user_input = st.text_area("Enter News Text:", height=150, placeholder="Type or paste a news article...")
+
+        if st.button("🔍 Predict"):
+            if user_input.strip() == "":
+                st.warning("⚠ Please enter some text!")
+            else:
+                # Transform and predict
+                transformed_input = vectorizer.transform([user_input])
+                prediction = model.predict(transformed_input)[0]
+
+                # Show result
+                if prediction == 0:
+                    st.error("❌ This news is **FAKE**")
+                else:
+                    st.success("✅ This news is **REAL**")
+
+except Exception as e:
+    st.error(f"An error occurred: {e}")
